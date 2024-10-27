@@ -10,10 +10,13 @@ const validator = require("validator");
 
 app.use(express.json());
 
+// login API
 app.post("/login", async (req, res) => {
   const { emailId, password } = req.body;
 
   try {
+
+    if(!emailId || !password) throw new Error(' : Credentials required')
     isEmailValid = validator.isEmail(emailId);
 
     if (!isEmailValid) {
@@ -33,10 +36,11 @@ app.post("/login", async (req, res) => {
       throw new Error(" : Invalid credentials");
     }
   } catch (err) {
-    res.status(400).send("User could not be added " + err.message);
+    res.status(400).send("User could not be logged in " + err.message);
   }
 });
 
+// Signup API
 app.post("/signup", async (req, res) => {
   const newUser = req.body;
 
