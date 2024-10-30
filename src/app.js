@@ -35,7 +35,7 @@ app.post("/login", async (req, res) => {
 
     if (isValidPwd) {
       const token = await jwt.sign({ _id: validUser._id }, "devTinder@143", {
-        exp: "60",
+        expiresIn: "60s",
       });
       res.cookie("token", token);
       res.status(200).send("User logged in");
