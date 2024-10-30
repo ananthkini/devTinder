@@ -7,37 +7,49 @@ const User = require("./models/user");
 const { sanitizeUserData } = require("../utils/sanitize");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { getUserAuth } = require("./middlerware/auth");
 
 app.use(express.json());
+app.use(cookieParser());
 
 // login API
 app.post("/login", async (req, res) => {
   const { emailId, password } = req.body;
 
   try {
-
-    if(!emailId || !password) throw new Error(' : Credentials required')
+    if (!emailId || !password) throw new Error(" : Credentials required");
     isEmailValid = validator.isEmail(emailId);
 
     if (!isEmailValid) {
       throw new Error(" : Invalid Email");
     }
-    const validUser = await User.findOne( {emailId} );
+    const validUser = await User.findOne({ emailId });
 
-    if(!validUser){
-      throw new Error(' : Invalid credentials')
+    if (!validUser) {
+      throw new Error(" : Invalid credentials");
     }
 
     const isValidPwd = await bcrypt.compare(password, validUser.password);
 
     if (isValidPwd) {
-      res.status(400).send("User logged in");
+      const token = await jwt.sign({ _id: validUser._id }, "devTinder@143", {
+        exp: "60",
+      });
+      res.cookie("token", token);
+      res.status(200).send("User logged in");
     } else {
       throw new Error(" : Invalid credentials");
     }
   } catch (err) {
     res.status(400).send("User could not be logged in " + err.message);
   }
+});
+
+// Get loggedIn user profile info POST Login
+app.get("/profile", getUserAuth, async (req, res) => {
+  res.send(res.user);
 });
 
 // Signup API
@@ -47,11 +59,10 @@ app.post("/signup", async (req, res) => {
   try {
     const clearData = sanitizeUserData(req);
 
-    const { firstName, lastName, gender, emailId, password } = req.body;
+    const { firstName, lastName, gender, emailId, password, skills } = req.body;
 
     const hashedPwd = await bcrypt.hash(password, 10);
 
-    console.log(hashedPwd);
     const ALLOWED_COLUMN = [
       "id",
       "firstName",
@@ -75,6 +86,7 @@ app.post("/signup", async (req, res) => {
       lastName,
       gender,
       emailId,
+      skills,
       password: hashedPwd,
     });
 
@@ -86,13 +98,16 @@ app.post("/signup", async (req, res) => {
 });
 
 // Find user by their emailId
-app.get("/user", async (req, res) => {
+app.get("/user", getUserAuth, async (req, res) => {
   const userId = req.body.emailId;
 
   try {
     const users = await User.find({ emailId: userId });
-    if (users.length === 0) res.status(400).send("User not found");
-    res.status(200).send(users);
+    if (users.length === 0) {
+      res.status(400).send("User not found");
+    } else {
+      res.status(200).send(users);
+    }
   } catch (err) {
     res.status(400).send("Something went wrong");
   }
