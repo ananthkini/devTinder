@@ -31,12 +31,10 @@ app.post("/login", async (req, res) => {
       throw new Error(" : Invalid credentials");
     }
 
-    const isValidPwd = await bcrypt.compare(password, validUser.password);
+    const isValidPwd = await validUser.validatePassword(password)
 
     if (isValidPwd) {
-      const token = await jwt.sign({ _id: validUser._id }, "devTinder@143", {
-        expiresIn: "60s",
-      });
+      const token = await validUser.getJWT();
       res.cookie("token", token);
       res.status(200).send("User logged in");
     } else {
