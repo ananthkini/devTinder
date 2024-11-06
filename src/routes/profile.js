@@ -26,11 +26,16 @@ profileAuth.patch("/profile/edit", getUserAuth, async (req, res) => {
     const decodedToken = jwt.verify(token, "devTinder@143");
     if (decodedToken._id) {
       if (validatePatchRequestData(data)) {
-        const isUpdated = await User.findByIdAndUpdate(
-          { _id: loggedInUser._id },
-          data
+        const isUpdated = Object.keys(data).forEach(
+          (key) => (loggedInUser[key] = data[key])
         );
-        res.status(200).send("Update");
+        await loggedInUser.save();
+        res
+          .status(200)
+          .json({
+            message: `${loggedInUser.firstName}, Your update was successful`,
+            data: loggedInUser,
+          });
       } else {
         throw new Error("Invalid Column");
       }
