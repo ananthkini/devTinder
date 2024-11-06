@@ -1,4 +1,4 @@
-const validator = require('validator')
+const validator = require("validator");
 
 const sanitizeUserData = (req) => {
   const { firstName, lastName, password, emailId } = req.body;
@@ -12,4 +12,22 @@ const sanitizeUserData = (req) => {
   }
 };
 
-module.exports = { sanitizeUserData };
+const validatePatchRequestData = (data) => {
+  const validColumn = [
+     "firstName",
+    "lastname",
+    "about",
+    "skills",
+    "photo",
+    "gender",
+    "age",
+  ];
+
+  const isRequestValid = Object.keys(data).every((columnName) =>
+    validColumn.includes(columnName) 
+  );
+
+  return isRequestValid;
+};
+
+module.exports = { sanitizeUserData, validatePatchRequestData };
