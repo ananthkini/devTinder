@@ -1,9 +1,10 @@
 const express = require("express");
 const { getUserAuth } = require("../middlerware/auth");
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validatePatchRequestData } = require("../../utils/sanitize");
-
+const validator = require("validator");
 const profileAuth = express.Router();
 
 // Get loggedIn user profile info POST Login
@@ -16,13 +17,8 @@ profileAuth.patch("/profile/edit", getUserAuth, async (req, res) => {
   const cookie = req.cookies;
   const loggedInUser = res.user;
 
-  console.log(loggedInUser);
-
   const { token } = cookie;
   try {
-    const userToUpdate = await User.findById(loggedInUser._id);
-    if (!userToUpdate) throw new Error("User does not exists");
-
     const decodedToken = jwt.verify(token, "devTinder@143");
     if (decodedToken._id) {
       if (validatePatchRequestData(data)) {
@@ -30,12 +26,10 @@ profileAuth.patch("/profile/edit", getUserAuth, async (req, res) => {
           (key) => (loggedInUser[key] = data[key])
         );
         await loggedInUser.save();
-        res
-          .status(200)
-          .json({
-            message: `${loggedInUser.firstName}, Your update was successful`,
-            data: loggedInUser,
-          });
+        res.status(200).json({
+          message: `${loggedInUser.firstName}, Your update was successful`,
+          data: loggedInUser,
+        });
       } else {
         throw new Error("Invalid Column");
       }
@@ -44,6 +38,29 @@ profileAuth.patch("/profile/edit", getUserAuth, async (req, res) => {
     }
   } catch (err) {
     res.status(400).send("User could not be updated " + err.message);
+  }
+});
+
+profileAuth.patch("/profile/forgotPassword", getUserAuth, async (req, res) => {
+  const { currentPwd, newPwd, confirmNewPwd } = req.body;
+  const loggedInUser = res.user;
+
+  try {
+    const isPwdCorrect = await loggedInUser.validatePassword(currentPwd);
+    if (!isPwdCorrect) throw new Error("Invalid password");
+
+    const isPwdStrong = validator.isStrongPassword(newPwd);
+    if (!isPwdStrong) throw new Error("Passwords needs to be strong");
+
+    if (newPwd !== confirmNewPwd) throw new Error("Password does not match");
+
+    const hashedPwd = await bcrypt.hash(newPwd, 10);
+    loggedInUser.password = hashedPwd;
+
+    await loggedInUser.save();
+    res.status(200).send("Password updated");
+  } catch (err) {
+    res.status(400).send("Password could not be changed : " + err.message);
   }
 });
 

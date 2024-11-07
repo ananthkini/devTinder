@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// get JWT Token for logIn
 userSchema.methods.getJWT = async function () {
   const currentUser = this;
 
@@ -77,6 +78,7 @@ userSchema.methods.getJWT = async function () {
   return token;
 };
 
+// Validate user entered password with the hashed password in DB
 userSchema.methods.validatePassword = async function (userPassword) {
   const currentUser = this;
   const hashedPassword = this.password;

@@ -21,6 +21,7 @@ const validatePatchRequestData = (data) => {
     "photo",
     "gender",
     "age",
+    "password"
   ];
 
   const isRequestValid = Object.keys(data).every((columnName) =>
