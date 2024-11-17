@@ -1,5 +1,5 @@
 const express = require("express");
-const { sanitizeUserData } = require("../../utils/sanitize");
+const { sanitizeUserData } = require("../utils/sanitize");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const validator = require("validator");

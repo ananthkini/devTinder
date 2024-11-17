@@ -3,7 +3,7 @@ const { getUserAuth } = require("../middlerware/auth");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { validatePatchRequestData } = require("../../utils/sanitize");
+const { validatePatchRequestData } = require("../utils/sanitize");
 const validator = require("validator");
 const profileAuth = express.Router();
 

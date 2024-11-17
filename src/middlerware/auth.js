@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
+//Validate if the user is logged in OR not. If logged in return the user document 
 const getUserAuth = async (req, res, next) => {
   const cookies = req.cookies;
 

@@ -4,7 +4,7 @@ const port = 7777;
 
 const { connectDB } = require("./config/database");
 const User = require("./models/user");
-const { sanitizeUserData } = require("../utils/sanitize");
+const { sanitizeUserData } = require("./utils/sanitize");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const cookieParser = require("cookie-parser");
@@ -12,6 +12,7 @@ const jwt = require("jsonwebtoken");
 const { getUserAuth } = require("./middlerware/auth");
 const authRoute = require("./routes/auth");
 const profileAuth = require("./routes/profile");
+const requestAuth = require("./routes/request");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -19,8 +20,7 @@ app.use(cookieParser());
 
 app.use('/', authRoute)
 app.use('/', profileAuth)
-
-
+app.use('/', requestAuth)
 
 
 
