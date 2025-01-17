@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema(
     age: {
       type: Number,
       min: 18,
+      required:true,
     },
     gender: {
       type: String,
@@ -55,8 +56,6 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      default:
-        "https://www.google.com/imgres?q=user%20icon&imgurl=https%3A%2F%2Fbanner2.cleanpng.com%2F20180622%2Ftqt%2Faazen4lhc.webp&imgrefurl=https%3A%2F%2Fwww.cleanpng.com%2Fpng-computer-icons-user-clip-art-consignee-3997281%2F&docid=n75pdFNNw5VnEM&tbnid=2AQniTaDbK2koM&vet=12ahUKEwjmh4u33KOJAxW9TGwGHSZ8J40QM3oECGcQAA..i&w=900&h=900&hcb=2&ved=2ahUKEwjmh4u33KOJAxW9TGwGHSZ8J40QM3oECGcQAA",
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error(" : Enter a valid photo url");

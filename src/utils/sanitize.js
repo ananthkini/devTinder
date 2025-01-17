@@ -15,13 +15,14 @@ const sanitizeUserData = (req) => {
 const validatePatchRequestData = (data) => {
   const validColumn = [
      "firstName",
-    "lastname",
+    "lastName",
     "about",
     "skills",
     "photo",
     "gender",
     "age",
-    "password"
+    "password",
+    "photoUrl"
   ];
 
   const isRequestValid = Object.keys(data).every((columnName) =>

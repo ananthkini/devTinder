@@ -15,7 +15,7 @@ const getUserAuth = async (req, res, next) => {
     res.user = user;
     next();
   } catch (err) {
-    res.status(400).send("Error validating user, " + err.message);
+    res.status(401).send("Error validating user, " + err.message);
   }
 };
 

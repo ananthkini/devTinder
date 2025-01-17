@@ -4,9 +4,7 @@ const { getUserAuth } = require("../middlerware/auth");
 
 const requestAuth = express.Router();
 
-requestAuth.get("/requests/sendRequest", getUserAuth, async (req, res) => {
-  res.status(200).send("Request received");
-});
+
 
 requestAuth.post(
   "/requests/send/:status/:toUserId",
@@ -50,6 +48,35 @@ requestAuth.post(
       });
     } catch (err) {
       res.status(400).send("Error " + err.message);
+    }
+  }
+);
+
+requestAuth.post(
+  "/requests/review/:status/:requestId",
+  getUserAuth,
+  async (req, res) => {
+    const { status, requestId } = req.params;
+    const loggedInUser = res.user;
+
+    try {
+      const ALLOWED_STATUS = ["accepted", "rejected"];
+      const isStatusAllowed = ALLOWED_STATUS.includes(status);
+
+      if (!isStatusAllowed) throw new Error("Status not allowed");
+
+      const isRequestValid = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+      if (!isRequestValid) throw new Error("Invalid request");
+
+      isRequestValid.status = status;
+      const data = await isRequestValid.save();
+      if (data) res.status(200).send(`Request ${status}`);
+    } catch (err) {
+      res.status(400).send("ERROR " + err.message);
     }
   }
 );

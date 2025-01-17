@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = 7777;
 
+const cors = require('cors')
 const { connectDB } = require("./config/database");
 const User = require("./models/user");
 const { sanitizeUserData } = require("./utils/sanitize");
@@ -13,16 +14,19 @@ const { getUserAuth } = require("./middlerware/auth");
 const authRoute = require("./routes/auth");
 const profileAuth = require("./routes/profile");
 const requestAuth = require("./routes/request");
+const userRouter = require("./routes/user");
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+  origin:'http://localhost:5173',
+  credentials:true,
+}));
 
-
-app.use('/', authRoute)
-app.use('/', profileAuth)
-app.use('/', requestAuth)
-
-
+app.use("/", authRoute);
+app.use("/", profileAuth);
+app.use("/", requestAuth);
+app.use("/", userRouter);
 
 // Find user by their emailId
 app.get("/user", getUserAuth, async (req, res) => {

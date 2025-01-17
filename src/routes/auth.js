@@ -26,6 +26,8 @@ authRoute.post("/signup", async (req, res) => {
       "gender",
       "skills",
       "about",
+      "photoUrl",
+      "age",
     ];
     const isInsertAllowed = Object.keys(newUser).every((key) =>
       ALLOWED_COLUMN.includes(key)
@@ -41,6 +43,7 @@ authRoute.post("/signup", async (req, res) => {
       gender,
       emailId,
       skills,
+      age,
       password: hashedPwd,
     });
 
@@ -73,19 +76,19 @@ authRoute.post("/login", async (req, res) => {
     if (isValidPwd) {
       const token = await validUser.getJWT();
       res.cookie("token", token);
-      res.status(200).send("User logged in");
+      res.status(200).send(validUser);
     } else {
-      throw new Error(" : Invalid credentials");
+      throw new Error("Invalid credentials");
     }
   } catch (err) {
-    res.status(400).send("User could not be logged in " + err.message);
+    res.status(400).send(err.message);
   }
 });
 
 authRoute.post("/logout", (req, res) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
-  }).status(400).send('Logged out')
+  }).status(200).send('Logged out')
 });
 
 module.exports = authRoute;
