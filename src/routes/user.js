@@ -11,6 +11,7 @@ const ALLOWED_GET_COLUMNS = [
   "gender",
   "skills",
   "about",
+  "age",
   "photoUrl"
 ];
 

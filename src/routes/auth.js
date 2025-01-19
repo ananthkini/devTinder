@@ -10,10 +10,12 @@ const authRoute = express.Router();
 authRoute.post("/signup", async (req, res) => {
   const newUser = req.body;
 
+  
+
   try {
     const clearData = sanitizeUserData(req);
 
-    const { firstName, lastName, gender, emailId, password, skills } = req.body;
+    const { firstName, lastName, gender, emailId, password, skills,age,photoUrl,about } = req.body;
 
     const hashedPwd = await bcrypt.hash(password, 10);
 
@@ -36,6 +38,7 @@ authRoute.post("/signup", async (req, res) => {
     if (!isInsertAllowed) throw new Error(" : Invalid column");
 
     if (newUser.skills.length > 10) throw new Error(" : Too many skills");
+    
 
     const user = new User({
       firstName,
@@ -44,8 +47,11 @@ authRoute.post("/signup", async (req, res) => {
       emailId,
       skills,
       age,
+      photoUrl,
+      about,
       password: hashedPwd,
     });
+
 
     await user.save();
     res.status(200).send("User added succesfully");
