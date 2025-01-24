@@ -23,6 +23,11 @@ app.use(cors({
   credentials:true,
 }));
 
+app.use(cors({
+  origin:'http://http://3.90.248.252:80',
+  credentials:true,
+}));
+
 app.use("/", authRoute);
 app.use("/", profileAuth);
 app.use("/", requestAuth);
