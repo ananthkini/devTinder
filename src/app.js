@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 7777;
+require('dotenv').config()
 
 const cors = require('cors')
 const { connectDB } = require("./config/database");
@@ -23,10 +23,6 @@ app.use(cors({
   credentials:true,
 }));
 
-app.use(cors({
-  origin:'http://http://3.90.248.252:80',
-  credentials:true,
-}));
 
 app.use("/", authRoute);
 app.use("/", profileAuth);
@@ -96,8 +92,8 @@ app.put("/updateUser", async (req, res) => {
 connectDB()
   .then(() => {
     console.log("Database connected succesfully");
-    app.listen(port, () =>
-      console.log(`Example app listening on port ${port}!`)
+    app.listen(process.env.PORT, () =>
+      console.log(`Example app listening on port ${process.env.PORT}!`)
     );
   })
   .catch((err) => {
