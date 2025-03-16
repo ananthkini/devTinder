@@ -15,6 +15,8 @@ const authRoute = require("./routes/auth");
 const profileAuth = require("./routes/profile");
 const requestAuth = require("./routes/request");
 const userRouter = require("./routes/user");
+const http = require('http');
+const initializeSocket = require("./utils/socket");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -22,6 +24,9 @@ app.use(cors({
   origin:'http://localhost:5173',
   credentials:true,
 }));
+
+const server = http.createServer(app)
+initializeSocket(server)
 
 
 app.use("/", authRoute);
@@ -92,7 +97,7 @@ app.put("/updateUser", async (req, res) => {
 connectDB()
   .then(() => {
     console.log("Database connected succesfully");
-    app.listen(process.env.PORT, () =>
+    server.listen(process.env.PORT, () =>
       console.log(`Example app listening on port ${process.env.PORT}!`)
     );
   })

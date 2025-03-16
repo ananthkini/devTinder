@@ -1,7 +1,7 @@
 const mongodb = require("mongoose");
 require('dotenv').config()
 
-console.log(process.env)
+// console.log(process.env)
 
 const connectDB = async () => {
   await mongodb.connect(
